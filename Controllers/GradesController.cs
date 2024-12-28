@@ -92,5 +92,28 @@ namespace StudentManagementAPI.Controllers
 
             return NoContent();
         }
+        [HttpGet("performance/{studentId}")]
+        public async Task<ActionResult<object>> GetStudentPerformance(int studentId)
+        {
+            var grades = await _context.Grades
+                .Where(g => g.StudentId == studentId) // Filter by student
+                .ToListAsync();
+
+            if (!grades.Any())
+            {
+                return NotFound("No grades found for this student.");
+            }
+
+            var report = new
+            {
+                AverageGrade = grades.Average(g => g.GradeValue),
+                MaxGrade = grades.Max(g => g.GradeValue),
+                MinGrade = grades.Min(g => g.GradeValue)
+            };
+
+            return Ok(report);
+        }
+        
+
     }
 }
